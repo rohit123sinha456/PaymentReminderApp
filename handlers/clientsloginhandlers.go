@@ -9,7 +9,7 @@ import (
 )
 
 
-type LoginHandler struct {
+type ClientloginHandler struct {
 	UserRepo *ClientRepository
 }
 
@@ -17,7 +17,7 @@ type loginRequest struct {
 	Email string `json:"email" binding:"required"`
 }
 
-func (h *LoginHandler) Login(c *gin.Context) {
+func (h *ClientloginHandler) Login(c *gin.Context) {
 	var email loginRequest
 	if err := c.ShouldBindJSON(&email); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

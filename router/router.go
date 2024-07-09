@@ -8,6 +8,7 @@ import(
 	. "github.com/rohit123sinha456/payredapp/config"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	// "log/slog"
 )
 
 type APIServer struct{
@@ -38,16 +39,46 @@ func NewAPIServer (listenAddr string, db *gorm.DB) *APIServer {
 	}
 	return apiserver
 }
+// func InitializeLogger() {
+// 	logFile, err := os.OpenFile("app.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+// 	if err != nil {
+// 		panic("Failed to open log file")
+// 	}
+
+// 	// Create a file handler
+// 	fileHandler := handler.NewIOWriterHandler(logFile, slog.LevelDebug )
+
+// 	// Create a console handler
+// 	consoleHandler := handler.NewConsoleHandler(slog.LevelDebug )
+
+// 	// Add the handlers to the logger
+// 	slog.PushHandler(fileHandler)
+// 	slog.PushHandler(consoleHandler)
+
+// 	// Set Gin to use the custom logger
+// 	gin.DefaultWriter = slog.Writer()
+// }
 
 func (server *APIServer) Init() {
 	server.router.Use(cors.Default())
+	// InitializeLogger()
+	// Middleware to log all requests
+	// server.router.Use(func(c *gin.Context) {
+	// 	slog.Infof("Incoming request: %s %s", c.Request.Method, c.Request.URL.Path)
+	// 	c.Next()
+	// 	slog.Infof("Response status: %d", c.Writer.Status())
+	// })
+
 	userHandler := &UserHandler{Repository: &server.UserStore}
     paymentHandler := &PaymentHandler{Repository: &server.PaymentStore}
 	quotationHandler := &QuotationHandler{Repository: &server.QuotationStore}
     serviceReportHandler := &ServiceReportHandler{Repository: &server.ServiceReportStore}
     nocHandler := &NOCHandler{Repository: &server.NocStore}
     clientHandler := &ClientHandler{Repository: &server.ClientStore}
-	loginHandler := &LoginHandler{UserRepo: &server.ClientStore}
+	clientloginHandler := &ClientloginHandler{UserRepo: &server.ClientStore}
+	userloginHandler := &UserloginHandler{UserRepo: &server.UserStore}
+
+	
 
 	// Email configuration
 	emailConfig := GetConfig()
@@ -62,54 +93,58 @@ func (server *APIServer) Init() {
 	//Client Login Routes
 	server.router.GET("/google_callback", googleOauthHandler.GoogleCallback)
 	server.router.GET("/google_login", googleOauthHandler.GoogleLogin)
-	server.router.POST("/login", loginHandler.Login)
+	server.router.POST("/clientlogin", clientloginHandler.Login)
+
+	// User Login
+	server.router.POST("/userlogin", userloginHandler.Login)
 
 	// User routes
-	server.router.POST("/users", userHandler.CreateUser)
-	server.router.GET("/users/:id", userHandler.GetUser)
-	server.router.GET("/users", userHandler.GetAllUsers)
-	server.router.PUT("/users/:id", userHandler.UpdateUser)
-	server.router.DELETE("/users/:id", userHandler.DeleteUser)
+	userprotected := server.router.Group("/api/web", AuthMiddleware())
+	userprotected.POST("/users", userHandler.CreateUser)
+	userprotected.GET("/users/:id", userHandler.GetUser)
+	userprotected.GET("/users", userHandler.GetAllUsers)
+	userprotected.PUT("/users/:id", userHandler.UpdateUser)
+	userprotected.DELETE("/users/:id", userHandler.DeleteUser)
 	
 
 	// Payment routes
-	server.router.POST("/payments", paymentHandler.CreatePayment)
-	server.router.GET("/payments/:id", paymentHandler.GetPayment)
-	server.router.GET("/payments", paymentHandler.GetAllPayments)
-	server.router.PUT("/payments/:id", paymentHandler.UpdatePayment)
-	server.router.DELETE("/payments/:id", paymentHandler.DeletePayment)
+	userprotected.POST("/payments", paymentHandler.CreatePayment)
+	userprotected.GET("/payments/:id", paymentHandler.GetPayment)
+	userprotected.GET("/payments", paymentHandler.GetAllPayments)
+	userprotected.PUT("/payments/:id", paymentHandler.UpdatePayment)
+	userprotected.DELETE("/payments/:id", paymentHandler.DeletePayment)
 
 	// Quotation routes
-    server.router.POST("/quotations", quotationHandler.CreateQuotation)
-    server.router.GET("/quotations/:id", quotationHandler.GetQuotation)
-    server.router.GET("/quotations", quotationHandler.GetAllQuotations)
-    server.router.PUT("/quotations/:id", quotationHandler.UpdateQuotation)
-    server.router.DELETE("/quotations/:id", quotationHandler.DeleteQuotation)
+    userprotected.POST("/quotations", quotationHandler.CreateQuotation)
+    userprotected.GET("/quotations/:id", quotationHandler.GetQuotation)
+    userprotected.GET("/quotations", quotationHandler.GetAllQuotations)
+    userprotected.PUT("/quotations/:id", quotationHandler.UpdateQuotation)
+    userprotected.DELETE("/quotations/:id", quotationHandler.DeleteQuotation)
 
     // ServiceReport routes
-    server.router.POST("/servicereports", serviceReportHandler.CreateServiceReport)
-    server.router.GET("/servicereports/:id", serviceReportHandler.GetServiceReport)
-    server.router.GET("/servicereports", serviceReportHandler.GetAllServiceReports)
-    server.router.PUT("/servicereports/:id", serviceReportHandler.UpdateServiceReport)
-    server.router.DELETE("/servicereports/:id", serviceReportHandler.DeleteServiceReport)
+    userprotected.POST("/servicereports", serviceReportHandler.CreateServiceReport)
+    userprotected.GET("/servicereports/:id", serviceReportHandler.GetServiceReport)
+    userprotected.GET("/servicereports", serviceReportHandler.GetAllServiceReports)
+    userprotected.PUT("/servicereports/:id", serviceReportHandler.UpdateServiceReport)
+    userprotected.DELETE("/servicereports/:id", serviceReportHandler.DeleteServiceReport)
 
     // NOC routes
-    server.router.POST("/nocs", nocHandler.CreateNOC)
-    server.router.GET("/nocs/:id", nocHandler.GetNOC)
-    server.router.GET("/nocs", nocHandler.GetAllNOCs)
-    server.router.PUT("/nocs/:id", nocHandler.UpdateNOC)
-    server.router.DELETE("/nocs/:id", nocHandler.DeleteNOC)
+    userprotected.POST("/nocs", nocHandler.CreateNOC)
+    userprotected.GET("/nocs/:id", nocHandler.GetNOC)
+    userprotected.GET("/nocs", nocHandler.GetAllNOCs)
+    userprotected.PUT("/nocs/:id", nocHandler.UpdateNOC)
+    userprotected.DELETE("/nocs/:id", nocHandler.DeleteNOC)
 
     // Client routes
-    server.router.POST("/clients", clientHandler.CreateClient)
-    server.router.GET("/clients/:id", clientHandler.GetClient)
-    server.router.GET("/clients", clientHandler.GetAllClients)
-    server.router.PUT("/clients/:id", clientHandler.UpdateClient)
-    server.router.DELETE("/clients/:id", clientHandler.DeleteClient)
-	server.router.GET("/clients/email", clientHandler.GetClientByEmail)
+    userprotected.POST("/clients", clientHandler.CreateClient)
+    userprotected.GET("/clients/:id", clientHandler.GetClient)
+    userprotected.GET("/clients", clientHandler.GetAllClients)
+    userprotected.PUT("/clients/:id", clientHandler.UpdateClient)
+    userprotected.DELETE("/clients/:id", clientHandler.DeleteClient)
+	userprotected.GET("/clients/email", clientHandler.GetClientByEmail)
 
 	// Email reminder route
-	server.router.POST("/send-reminders", emailHandler.SendReminders)
+	userprotected.POST("/send-reminders", emailHandler.SendReminders)
 
 
 
