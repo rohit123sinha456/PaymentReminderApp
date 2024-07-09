@@ -1,9 +1,8 @@
 package storage
 
 import(
-    "log"
-		"gorm.io/gorm"
-		. "github.com/rohit123sinha456/payredapp/models"
+	"gorm.io/gorm"
+	. "github.com/rohit123sinha456/payredapp/models"
 )
 
 type ClientRepository struct {
@@ -41,7 +40,6 @@ func (r *ClientRepository) Delete(id uint) error {
 func (r *ClientRepository) FindByEmail(email string) (*Client, error) {
     var client Client
     if err := r.DB.Where("login_email = ? OR JSON_CONTAINS(emails, ?)", email, `"`+email+`"`).First(&client).Error; err != nil {
-        log.Fatal(err)
         return nil, err
     }
     return &client, nil

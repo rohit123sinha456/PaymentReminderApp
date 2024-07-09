@@ -51,12 +51,13 @@ func (h *QuotationHandler) GetAllQuotations(c *gin.Context) {
 
 func (h *QuotationHandler) UpdateQuotation(c *gin.Context) {
     var quotation Quotation
+    quotationID := c.Param("id")
     if err := c.ShouldBindJSON(&quotation); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    if err := h.Repository.Update(&quotation); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if result := h.Repository.DB.Model(&Quotation{}).Where("id = ?",quotationID).Updates(quotation); result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error})
         return
     }
     c.JSON(http.StatusOK, quotation)

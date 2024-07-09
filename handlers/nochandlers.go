@@ -51,12 +51,13 @@ func (h *NOCHandler) GetAllNOCs(c *gin.Context) {
 
 func (h *NOCHandler) UpdateNOC(c *gin.Context) {
     var noc NOC
+    nocID := c.Param("id")
     if err := c.ShouldBindJSON(&noc); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    if err := h.Repository.Update(&noc); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if result := h.Repository.DB.Model(&NOC{}).Where("id = ?",nocID).Updates(noc); result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error})
         return
     }
     c.JSON(http.StatusOK, noc)

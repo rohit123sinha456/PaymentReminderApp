@@ -51,12 +51,13 @@ func (h *ServiceReportHandler) GetAllServiceReports(c *gin.Context) {
 
 func (h *ServiceReportHandler) UpdateServiceReport(c *gin.Context) {
     var serviceReport ServiceReport
+    serviceReportID := c.Param("id")
     if err := c.ShouldBindJSON(&serviceReport); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    if err := h.Repository.Update(&serviceReport); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if result := h.Repository.DB.Model(&ServiceReport{}).Where("id = ?",serviceReportID).Updates(serviceReport); result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error})
         return
     }
     c.JSON(http.StatusOK, serviceReport)

@@ -51,12 +51,13 @@ func (h *ClientHandler) GetAllClients(c *gin.Context) {
 
 func (h *ClientHandler) UpdateClient(c *gin.Context) {
     var client Client
+    clientID := c.Param("id")
     if err := c.ShouldBindJSON(&client); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    if err := h.Repository.Update(&client); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if result := h.Repository.DB.Model(&Client{}).Where("id = ?",clientID).Updates(client); result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error})
         return
     }
     c.JSON(http.StatusOK, client)

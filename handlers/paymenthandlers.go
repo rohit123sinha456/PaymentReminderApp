@@ -52,12 +52,13 @@ func (h *PaymentHandler) GetAllPayments(c *gin.Context) {
 
 func (h *PaymentHandler) UpdatePayment(c *gin.Context) {
     var payment Payment
+    paymentID := c.Param("id")
     if err := c.ShouldBindJSON(&payment); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    if err := h.Repository.Update(&payment); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if result := h.Repository.DB.Model(&Payment{}).Where("id = ?",paymentID).Updates(payment); result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error})
         return
     }
     c.JSON(http.StatusOK, payment)

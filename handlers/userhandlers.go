@@ -3,7 +3,7 @@ package handlers
 import (
     "net/http"
     "strconv"
-
+    "log"
     "github.com/gin-gonic/gin"
 	. "github.com/rohit123sinha456/payredapp/storage"
     . "github.com/rohit123sinha456/payredapp/models"
@@ -53,12 +53,13 @@ func (h *UserHandler) GetAllUsers(c *gin.Context) {
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
     var user User
+    userID := c.Param("id")
     if err := c.ShouldBindJSON(&user); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
-    if err := h.Repository.Update(&user); err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if result := h.Repository.DB.Model(&User{}).Where("id = ?",userID).Updates(user); result.Error != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": result.Error})
         return
     }
     c.JSON(http.StatusOK, user)
@@ -70,6 +71,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
         c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user ID"})
         return
     }
+    log.Printf("%d",uint(id))
     if err := h.Repository.Delete(uint(id)); err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return

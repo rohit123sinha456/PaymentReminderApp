@@ -1,0 +1,857 @@
+{
+    "info": {
+      "name": "My API Collection",
+      "_postman_id": "d1d2e5f6-1234-5678-abcd-ef0123456789",
+      "description": "A collection of all routes for My API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Login",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\": \"user@example.com\", \"password\": \"password\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/login",
+            "host": ["{{base_url}}"],
+            "path": ["login"]
+          }
+        }
+      },
+      {
+        "name": "Refresh Token",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/refresh",
+            "host": ["{{base_url}}"],
+            "path": ["refresh"]
+          }
+        }
+      },
+      {
+        "name": "Logout",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{}"
+          },
+          "url": {
+            "raw": "{{base_url}}/logout",
+            "host": ["{{base_url}}"],
+            "path": ["logout"]
+          }
+        }
+      },
+      {
+        "name": "Get Payment Reminders",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/payments/reminders",
+            "host": ["{{base_url}}"],
+            "path": ["api", "payments", "reminders"]
+          }
+        }
+      },
+      {
+        "name": "Get Quotation Reminders",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/quotations/reminders",
+            "host": ["{{base_url}}"],
+            "path": ["api", "quotations", "reminders"]
+          }
+        }
+      },
+      {
+        "name": "Get Service Reports",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/service-reports",
+            "host": ["{{base_url}}"],
+            "path": ["api", "service-reports"]
+          }
+        }
+      },
+      {
+        "name": "Get NOCs",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/api/nocs",
+            "host": ["{{base_url}}"],
+            "path": ["api", "nocs"]
+          }
+        }
+      },
+      {
+        "name": "Create User",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"John Doe\", \"email\": \"john@example.com\", \"phone_number\": \"1234567890\", \"password\": \"password\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/users",
+            "host": ["{{base_url}}"],
+            "path": ["users"]
+          }
+        }
+      },
+      {
+        "name": "Get User by ID",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/users/:id",
+            "host": ["{{base_url}}"],
+            "path": ["users", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Get All Users",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/users",
+            "host": ["{{base_url}}"],
+            "path": ["users"]
+          }
+        }
+      },
+      {
+        "name": "Update User",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"John Doe Updated\", \"email\": \"john.updated@example.com\", \"phone_number\": \"0987654321\", \"password\": \"newpassword\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/users/:id",
+            "host": ["{{base_url}}"],
+            "path": ["users", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Delete User",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/users/:id",
+            "host": ["{{base_url}}"],
+            "path": ["users", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Create Payment",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"invoice_date\": \"2023-07-04T00:00:00Z\", \"invoice_number\": \"INV-12345\", \"invoice_amount\": 100.50, \"invoice_for\": \"Service\", \"number_of_reminders\": 3, \"list_of_reminder_dates\": [\"2023-07-10T00:00:00Z\", \"2023-07-17T00:00:00Z\", \"2023-07-24T00:00:00Z\"], \"is_paid\": false, \"invoice_link\": \"http://example.com/invoice.pdf\", \"client_id\": 1, \"categories\": [\"Service\", \"Maintenance\"]}"
+          },
+          "url": {
+            "raw": "{{base_url}}/payments",
+            "host": ["{{base_url}}"],
+            "path": ["payments"]
+          }
+        }
+      },
+      {
+        "name": "Get Payment by ID",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/payments/:id",
+            "host": ["{{base_url}}"],
+            "path": ["payments", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Get All Payments",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/payments",
+            "host": ["{{base_url}}"],
+            "path": ["payments"]
+          }
+        }
+      },
+      {
+        "name": "Update Payment",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"invoice_date\": \"2023-07-05T00:00:00Z\", \"invoice_number\": \"INV-54321\", \"invoice_amount\": 150.75, \"invoice_for\": \"Updated Service\", \"number_of_reminders\": 2, \"list_of_reminder_dates\": [\"2023-07-11T00:00:00Z\", \"2023-07-18T00:00:00Z\"], \"is_paid\": true, \"invoice_link\": \"http://example.com/updated_invoice.pdf\", \"client_id\": 1, \"categories\": [\"Updated Service\", \"Repair\"]}"
+          },
+          "url": {
+            "raw": "{{base_url}}/payments/:id",
+            "host": ["{{base_url}}"],
+            "path": ["payments", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Delete Payment",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/payments/:id",
+            "host": ["{{base_url}}"],
+            "path": ["payments", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Create Quotation",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"quotation_number\": \"QTN-12345\", \"quotation_date\": \"2023-07-04T00:00:00Z\", \"quotation_total_value\": 2500.75, \"quotation_reason\": \"New Project\", \"client_id\": 1, \"quotation_valid_til\": \"2023-07-31T00:00:00Z\", \"is_approved\": false, \"quotation_scanned_link\": \"http://example.com/quotation.pdf\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/quotations",
+            "host": ["{{base_url}}"],
+            "path": ["quotations"]
+          }
+        }
+      },
+      {
+        "name": "Get Quotation by ID",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/quotations/:id",
+            "host": ["{{base_url}}"],
+            "path": ["quotations", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Get All Quotations",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/quotations",
+            "host": ["{{base_url}}"],
+            "path": ["quotations"]
+          }
+        }
+      },
+      {
+        "name": "Update Quotation",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"quotation_number\": \"QTN-54321\", \"quotation_date\": \"2023-07-05T00:00:00Z\", \"quotation_total_value\": 3000.00, \"quotation_reason\": \"Updated Project\", \"client_id\": 1, \"quotation_valid_til\": \"2023-08-01T00:00:00Z\", \"is_approved\": true, \"quotation_scanned_link\": \"http://example.com/updated_quotation.pdf\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/quotations/:id",
+            "host": ["{{base_url}}"],
+            "path": ["quotations", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Delete Quotation",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/quotations/:id",
+            "host": ["{{base_url}}"],
+            "path": ["quotations", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Create Service Report",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"service_report_number\": \"SR-12345\", \"service_report_date\": \"2023-07-04T00:00:00Z\", \"sent_date\": \"2023-07-05T00:00:00Z\", \"is_deleted\": false, \"service_report_link\": \"http://example.com/service_report.pdf\", \"client_id\": 1, \"service_report_notes\": \"Routine check\", \"attention_required\": \"No\", \"system_status\": \"Operational\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/service-reports",
+            "host": ["{{base_url}}"],
+            "path": ["service-reports"]
+          }
+        }
+      },
+      {
+        "name": "Get Service Report by ID",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/service-reports/:id",
+            "host": ["{{base_url}}"],
+            "path": ["service-reports", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Get All Service Reports",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/service-reports",
+            "host": ["{{base_url}}"],
+            "path": ["service-reports"]
+          }
+        }
+      },
+      {
+        "name": "Update Service Report",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"service_report_number\": \"SR-54321\", \"service_report_date\": \"2023-07-05T00:00:00Z\", \"sent_date\": \"2023-07-06T00:00:00Z\", \"is_deleted\": true, \"service_report_link\": \"http://example.com/updated_service_report.pdf\", \"client_id\": 1, \"service_report_notes\": \"Updated check\", \"attention_required\": \"Yes\", \"system_status\": \"Needs maintenance\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/service-reports/:id",
+            "host": ["{{base_url}}"],
+            "path": ["service-reports", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Delete Service Report",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/service-reports/:id",
+            "host": ["{{base_url}}"],
+            "path": ["service-reports", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Create NOC",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"noc_number\": \"NOC-12345\", \"noc_date\": \"2023-07-04T00:00:00Z\", \"noc_total_value\": 5000.75, \"noc_reason\": \"Network Setup\", \"client_id\": 1, \"noc_valid_til\": \"2023-07-31T00:00:00Z\", \"is_approved\": false, \"noc_scanned_link\": \"http://example.com/noc.pdf\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/nocs",
+            "host": ["{{base_url}}"],
+            "path": ["nocs"]
+          }
+        }
+      },
+      {
+        "name": "Get NOC by ID",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/nocs/:id",
+            "host": ["{{base_url}}"],
+            "path": ["nocs", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Get All NOCs",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/nocs",
+            "host": ["{{base_url}}"],
+            "path": ["nocs"]
+          }
+        }
+      },
+      {
+        "name": "Update NOC",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"noc_number\": \"NOC-54321\", \"noc_date\": \"2023-07-05T00:00:00Z\", \"noc_total_value\": 6000.00, \"noc_reason\": \"Updated Network Setup\", \"client_id\": 1, \"noc_valid_til\": \"2023-08-01T00:00:00Z\", \"is_approved\": true, \"noc_scanned_link\": \"http://example.com/updated_noc.pdf\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/nocs/:id",
+            "host": ["{{base_url}}"],
+            "path": ["nocs", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Delete NOC",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/nocs/:id",
+            "host": ["{{base_url}}"],
+            "path": ["nocs", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Create Client",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"Client Name\", \"login_email\": \"client@example.com\", \"email\": [\"client1@example.com\", \"client2@example.com\"], \"phone_number\": \"1234567890\", \"location\": \"Client Location\", \"gst_number\": \"GST123456789\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/clients",
+            "host": ["{{base_url}}"],
+            "path": ["clients"]
+          }
+        }
+      },
+      {
+        "name": "Get Client by ID",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/clients/:id",
+            "host": ["{{base_url}}"],
+            "path": ["clients", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Get All Clients",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/clients",
+            "host": ["{{base_url}}"],
+            "path": ["clients"]
+          }
+        }
+      },
+      {
+        "name": "Update Client",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"name\": \"Updated Client Name\", \"login_email\": \"updated_client@example.com\", \"email\": [\"updated_client1@example.com\", \"updated_client2@example.com\"], \"phone_number\": \"0987654321\", \"location\": \"Updated Client Location\", \"gst_number\": \"GST987654321\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/clients/:id",
+            "host": ["{{base_url}}"],
+            "path": ["clients", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Delete Client",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "{{token}}"
+            }
+          ],
+          "url": {
+            "raw": "{{base_url}}/clients/:id",
+            "host": ["{{base_url}}"],
+            "path": ["clients", ":id"],
+            "variable": [
+              {
+                "key": "id",
+                "value": "1"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "Check Client Email",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\"email\": \"client@example.com\"}"
+          },
+          "url": {
+            "raw": "{{base_url}}/clients/check-email",
+            "host": ["{{base_url}}"],
+            "path": ["clients", "check-email"]
+          }
+        }
+      }
+    ]
+  }
+  

@@ -29,6 +29,7 @@ func (r *UserRepository) Update(user interface{}) error {
 
 func (r *UserRepository) Delete(id uint) error {
     return r.DB.Delete(&User{}, id).Error
+    // return r.DB.Where("id = ?", id).Delete(&user).Error
 }
 
 func (r *UserRepository) ReadAll() ([]interface{}, error) {
