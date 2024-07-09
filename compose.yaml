@@ -14,7 +14,7 @@ services:
     command: server --console-address ":9001" /data
 
   app:
-    image: signage-api
+    image: go-app
     build: .
     ports:
       - "8088:8088"
@@ -23,7 +23,7 @@ services:
     networks:
       - back-tier
 
-  mysql:
+  db:
     image: mysql
     ports:
       - "3306:3306"

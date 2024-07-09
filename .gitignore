@@ -2,3 +2,5 @@ config/config.go
 scratch/
 docs/
 .env
+db/
+minio/
