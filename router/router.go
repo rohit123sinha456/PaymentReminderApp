@@ -4,6 +4,7 @@ import(
 	"gorm.io/gorm"
 	. "github.com/rohit123sinha456/payredapp/storage"
 	. "github.com/rohit123sinha456/payredapp/handlers"
+	. "github.com/rohit123sinha456/payredapp/helpers"
 	. "github.com/rohit123sinha456/payredapp/config"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
@@ -46,6 +47,7 @@ func (server *APIServer) Init() {
     serviceReportHandler := &ServiceReportHandler{Repository: &server.ServiceReportStore}
     nocHandler := &NOCHandler{Repository: &server.NocStore}
     clientHandler := &ClientHandler{Repository: &server.ClientStore}
+	loginHandler := &LoginHandler{UserRepo: &server.ClientStore}
 
 	// Email configuration
 	emailConfig := GetConfig()
@@ -60,6 +62,7 @@ func (server *APIServer) Init() {
 	//Client Login Routes
 	server.router.GET("/google_callback", googleOauthHandler.GoogleCallback)
 	server.router.GET("/google_login", googleOauthHandler.GoogleLogin)
+	server.router.POST("/login", loginHandler.Login)
 
 	// User routes
 	server.router.POST("/users", userHandler.CreateUser)
@@ -108,6 +111,14 @@ func (server *APIServer) Init() {
 	// Email reminder route
 	server.router.POST("/send-reminders", emailHandler.SendReminders)
 
+
+
+	// API For app to consume
+	protected := server.router.Group("/api/app", AuthMiddleware())
+	protected.GET("/payments/reminders", paymentHandler.GetPaymentReminders)
+	protected.GET("/quotations/reminders", quotationHandler.GetQuotationReminders)
+	protected.GET("/service-reports", serviceReportHandler.GetServiceReports)
+	protected.GET("/nocs", nocHandler.GetNOCs)
 }
 
 func (server *APIServer) Run() {

@@ -74,3 +74,21 @@ func (h *NOCHandler) DeleteNOC(c *gin.Context) {
     }
     c.JSON(http.StatusNoContent, nil)
 }
+// GetNOCs fetches all NOCs for the logged-in client.
+func (h *NOCHandler) GetNOCs(c *gin.Context) {
+	clientID, exists := c.Get("clientID")
+	if !exists {
+		// slog.Error("Client ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var nocs []NOC
+	if err := h.Repository.DB.Where("client_id = ?", clientID).Find(&nocs).Error; err != nil {
+		// slog.Errorf("Failed to fetch NOCs for client ID %d: %s", clientID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch NOCs"})
+		return
+	}
+
+	c.JSON(http.StatusOK, nocs)
+}

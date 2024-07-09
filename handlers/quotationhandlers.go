@@ -74,3 +74,22 @@ func (h *QuotationHandler) DeleteQuotation(c *gin.Context) {
     }
     c.JSON(http.StatusNoContent, nil)
 }
+
+// GetQuotationReminders fetches all quotations for the logged-in client.
+func (h *QuotationHandler) GetQuotationReminders(c *gin.Context) {
+	clientID, exists := c.Get("clientID")
+	if !exists {
+		// slog.Error("Client ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var quotations []Quotation
+	if err := h.Repository.DB.Where("client_id = ?", clientID).Find(&quotations).Error; err != nil {
+		// slog.Errorf("Failed to fetch quotations for client ID %d: %s", clientID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch quotations"})
+		return
+	}
+
+	c.JSON(http.StatusOK, quotations)
+}

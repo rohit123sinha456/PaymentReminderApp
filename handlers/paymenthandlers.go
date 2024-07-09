@@ -75,3 +75,22 @@ func (h *PaymentHandler) DeletePayment(c *gin.Context) {
     }
     c.JSON(http.StatusNoContent, nil)
 }
+
+func (h *PaymentHandler) GetPaymentReminders(c *gin.Context) {
+	clientID, exists := c.Get("clientID")
+	if !exists {
+		// slog.Error("Client ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var payments []Payment
+	if err := h.Repository.DB.Where("client_id = ?", clientID).Find(&payments).Error; err != nil {
+		// slog.Errorf("Failed to fetch payments for client ID %d: %s", clientID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch payments"})
+		return
+	}
+
+	c.JSON(http.StatusOK, payments)
+}
+

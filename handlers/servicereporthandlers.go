@@ -74,3 +74,21 @@ func (h *ServiceReportHandler) DeleteServiceReport(c *gin.Context) {
     }
     c.JSON(http.StatusNoContent, nil)
 }
+// GetServiceReports fetches all service reports for the logged-in client.
+func (h *ServiceReportHandler) GetServiceReports(c *gin.Context) {
+	clientID, exists := c.Get("clientID")
+	if !exists {
+		// slog.Error("Client ID not found in context")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var serviceReports []ServiceReport
+	if err := h.Repository.DB.Where("client_id = ?", clientID).Find(&serviceReports).Error; err != nil {
+		// slog.Errorf("Failed to fetch service reports for client ID %d: %s", clientID, err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch service reports"})
+		return
+	}
+
+	c.JSON(http.StatusOK, serviceReports)
+}
