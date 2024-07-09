@@ -13,45 +13,29 @@ services:
       - back-tier
     command: server --console-address ":9001" /data
 
-  db:
-    image: mysql:8.0
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: ${DB_NAME}
-    ports:
-      - "3306:3306"
-    volumes:
-      - db_data:/var/lib/mysql
-    networks:
-      - back-tier
-
   app:
+    image: go-app
     build: .
-    container_name: go-app
+    ports:
+      - "8088:8088"
     depends_on:
       - db
     environment:
-      DB_USER: "root"
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_NAME: ${DB_NAME}
-      DB_CHARSET: ${DB_CHARSET}
-      DB_PARSE_TIME: ${DB_PARSE_TIME}
-      DB_LOC: ${DB_LOC}
-    ports:
-      - "8080:8080"
-    volumes:
-      - .:/app
+      - GIN_MODE=release
     networks:
       - back-tier
-    command: ["./main"]
 
-volumes:
-  db_data:
+  db:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./db/data:/var/lib/mysql
+    networks:
+      - back-tier
+
+
 networks:
   back-tier: {}
