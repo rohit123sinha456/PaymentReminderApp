@@ -1,4 +1,4 @@
-package main
+package migrations
 
 import (
     "fmt"
@@ -19,7 +19,7 @@ func DropTablesIfExists(db *gorm.DB) {
 
 func SeedData(db *gorm.DB) {
     // Seed 20 values for each model (sample data)
-    for i := 1; i <= 20; i++ {
+    for i := 1; i <= 5; i++ {
         // Seed Clients
         client := Client{
             Name:     fmt.Sprintf("Client%d", i),

@@ -17,5 +17,6 @@ type Client struct {
 	SiteName  string         `gorm:"size:255;not null"`
 	Address   string         `gorm:"size:255"`
 	LoginEmail string         `gorm:"size:255;not null"`
-	Password    string         `gorm:"size:255;not null"`
+	FCMToken    string         `gorm:"size:255"`
+	FCMClientid    string         `gorm:"size:255"`
 }

@@ -1,0 +1,39 @@
+services:
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${DOCKERMINIOROOTUSER}
+      - MINIO_ROOT_PASSWORD=${DOCKERMINIOROOTPASS}
+    volumes:
+      - ./minio/data:/data
+    networks:
+      - back-tier
+    command: server --console-address ":9001" /data
+
+  app:
+    image: signage-api
+    build: .
+    ports:
+      - "8088:8088"
+    environment:
+      - GIN_MODE=release
+    networks:
+      - back-tier
+
+  mongo:
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./db/data:/data/db 
+    networks:
+      - back-tier
+
+
+networks:
+  back-tier: {}
