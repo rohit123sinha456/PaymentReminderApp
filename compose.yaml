@@ -32,7 +32,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ./db/data:/data/db 
+      - ./db/data:/var/lib/mysql
     networks:
       - back-tier
 
