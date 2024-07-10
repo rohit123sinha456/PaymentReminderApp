@@ -8,7 +8,7 @@ import (
 	"github.com/joho/godotenv"
 	// . "github.com/rohit123sinha456/payredapp/router"
 	. "github.com/rohit123sinha456/payredapp/migrations"
-
+	"time"
 	"fmt"
 )
 
@@ -32,13 +32,20 @@ func main() {
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s",user, password, host, port, dbname, charset, parseTime, loc)
 	log.Printf(dsn)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil{
-		log.Fatal(err)
+	timeout:= 20
+	for i:= 1: i<= timeout; i++{
+		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err == nil{
+			break
+		}
+		time.Sleep(time.Second * 5)
 	}
 
-	// apiserver := NewAPIServer(":8080",db)
-	// apiserver.Run()
+	if db == nil{
+		log.Fatal("Couldn't connect DB")
+	}
+	apiserver := NewAPIServer(":8080",db)
+	apiserver.Run()
 
-	Migrate(db)
+	// Migrate(db)
   }
