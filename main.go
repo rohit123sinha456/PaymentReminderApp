@@ -6,13 +6,14 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"github.com/joho/godotenv"
-	// . "github.com/rohit123sinha456/payredapp/router"
-	. "github.com/rohit123sinha456/payredapp/migrations"
+	. "github.com/rohit123sinha456/payredapp/router"
+	// . "github.com/rohit123sinha456/payredapp/migrations"
 	"time"
 	"fmt"
 )
 
 func main() {
+	var db *gorm.DB
 	err := godotenv.Load()
     if err != nil {
         log.Fatalf("Error loading .env file")
