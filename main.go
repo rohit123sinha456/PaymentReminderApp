@@ -33,15 +33,15 @@ func main() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=%s&loc=%s",user, password, host, port, dbname, charset, parseTime, loc)
 	log.Printf(dsn)
 	timeout:= 20
-	for i:= 1: i<= timeout; i++{
+	for i:= 1; i<= timeout; i++ {
 		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-		if err == nil{
+		if err == nil {
 			break
 		}
 		time.Sleep(time.Second * 5)
 	}
 
-	if db == nil{
+	if db == nil {
 		log.Fatal("Couldn't connect DB")
 	}
 	apiserver := NewAPIServer(":8080",db)
