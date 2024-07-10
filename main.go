@@ -35,7 +35,7 @@ func main() {
 	log.Printf(dsn)
 	timeout:= 20
 	for i:= 1; i<= timeout; i++ {
-		db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err == nil {
 			break
 		}
