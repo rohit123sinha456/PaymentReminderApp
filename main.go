@@ -45,7 +45,7 @@ func main() {
 	if db == nil {
 		log.Fatal("Couldn't connect DB")
 	}
-	apiserver := NewAPIServer(":8080",db)
+	apiserver := NewAPIServer(":8088",db)
 	apiserver.Run()
 
 	// Migrate(db)
