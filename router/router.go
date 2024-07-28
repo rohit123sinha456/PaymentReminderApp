@@ -154,6 +154,8 @@ func (server *APIServer) Init() {
 	protected.GET("/quotations/reminders", quotationHandler.GetQuotationReminders)
 	protected.GET("/service-reports", serviceReportHandler.GetServiceReports)
 	protected.GET("/nocs", nocHandler.GetNOCs)
+    protected.PUT("/clients/:id", clientHandler.UpdateClient)
+
 }
 
 func (server *APIServer) Run() {

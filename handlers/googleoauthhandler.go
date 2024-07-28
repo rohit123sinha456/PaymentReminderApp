@@ -33,7 +33,7 @@ func GoogleConfig() oauth2.Config {
         log.Fatalf("Some error occured. Err: %s", err)
     }
     AppConfig.GoogleLoginConfig = oauth2.Config{
-        RedirectURL:  "http://localhost:8080/google_callback",
+        RedirectURL:  os.Getenv("GOOGLECALLBACKURL")+"/google_callback",
 		ClientID:     os.Getenv("ClientID"),
         ClientSecret: os.Getenv("ClientSecret"),
         Scopes: []string{"https://www.googleapis.com/auth/userinfo.email",
@@ -84,6 +84,6 @@ func (config *Config) GoogleCallback(c *gin.Context) {
 		return 
     }
 	json.Unmarshal(userData,&UData)
-    c.String(http.StatusOK,UData.Name)
+    c.String(http.StatusOK,UData.Email)
 	return
 }
