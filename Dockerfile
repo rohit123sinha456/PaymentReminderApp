@@ -11,6 +11,7 @@ RUN go mod download
 # Copy the source code
 COPY . .
 
+COPY ./web/templates /app/web/templates
 # Build the Go application
 RUN go build -o myapp .
 

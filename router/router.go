@@ -67,6 +67,7 @@ func (server *APIServer) Init() {
 
 	server.router.Use(cors.Default())
 	server.router.Static("/assets", os.Getenv("TEMPLATEPATH")+"assets")
+	
 	server.router.LoadHTMLGlob(os.Getenv("TEMPLATEPATH")+"templates/*")
 	// InitializeLogger()
 	// Middleware to log all requests
