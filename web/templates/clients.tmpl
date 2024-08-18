@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header" .}}
+<body>
+  {{template "navbar" .}}
+  {{template "sidebar" .}}
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Clients</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-12">
+    
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Clients list</h5>
+    
+                  
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
+                    Create Client
+                  </button>
+                  <div class="modal fade" id="basicModal" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Create Clients</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">Client Details</h5>
+                
+                              <!-- General Form Elements -->
+                              <form id="userCreateForm">
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Client Name</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputClientName" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Login Email</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputClientLoginEmail" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Other Emails Number</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputOtherEmails" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Phone Number</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputPhoneNumber" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Site Name</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputSiteName" required>
+                                  </div>
+                                </div>  
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Address</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputAddress" required>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
+                                </div>
+                              </form><!-- End General Form Elements -->
+                
+                            </div>
+                          </div>
+
+                        
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div><!-- End Basic Modal-->
+
+
+
+                  <!-- Default Table -->
+                  <table class="table" id="usersTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Site</th>
+                        <th scope="col">Emails</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Login</th>
+                        <th scope="col">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <!-- User data will be inserted here -->
+                    </tbody>
+                  </table>
+                  
+                  <!-- End Default Table Example -->
+                </div>
+              </div>
+    
+    </section>
+
+  </main><!-- End #main -->
+
+<script>
+    $(document).ready(function() {
+      const token = localStorage.getItem('jwt');
+      var editClientId = null;
+        // Function to fetch and display users
+        function fetchUsers() {
+            $.ajax({
+                url: '/api/web/clients',
+                method: 'GET',
+                headers: {
+                  'Authorization': token
+                },
+                success: function(data) {
+                    var tbody = $('#usersTable tbody');
+                    tbody.empty(); // Clear previous data
+                    data.forEach(function(user) {
+                        var emailList = Array.isArray(user.Emails) ? user.Emails.join(', ') : user.Emails;
+                        var phoneList = Array.isArray(user.PhoneNumbers) ? user.PhoneNumbers.join(', ') : user.PhoneNumbers;
+                        var row = '<tr>' +
+                            '<td>' + user.ID + '</td>' +
+                            '<td>' + user.Name + '</td>'+
+                            '<td>' + user.SiteName + '</td>'+
+                            '<td>' + emailList + '</td>'+
+                            '<td>' + phoneList + '</td>'+
+                            '<td>' + user.LoginEmail + '</td>'+
+                            '<td><button type="button" class="btn btn-warning btn-sm" onclick="editClient(' + user.ID + ')">Edit</button></td>' +
+                            '<td><button type="button" class="btn btn-warning btn-sm" onclick="deleteClient(' + user.ID + ')">Delete</button></td>' +
+                            '</tr>';
+                        tbody.append(row);
+                    });
+                },
+                error: function(error) {
+                    console.error('Error fetching users:', error);
+                }
+            });
+        }
+
+        // Function to send form data to the server
+        $('#userCreateForm').on('submit', function() {
+          event.preventDefault(); // Prevent form from submitting normally
+          var otherEmailsInput = $('#inputOtherEmails').val();
+          var emailsArray = otherEmailsInput.split(',').map(function(email) {
+              return email.trim();
+          });
+
+          var phoneNumberInput = $('#inputPhoneNumber').val();
+          var phonesArray = phoneNumberInput.split(',').map(function(email) {
+              return email.trim();
+          });
+
+            var data = {
+                name: $('#inputClientName').val(),
+                loginemail: $('#inputClientLoginEmail').val(),
+                emails: emailsArray,
+                phonenumbers: phonesArray,
+                sitename: $('#inputSiteName').val(),
+                address: $('#inputAddress').val(),
+            };
+
+            var url = editClientId ? '/api/web/clients/' + editClientId : '/api/web/clients';
+            var method = editClientId ? 'PUT' : 'POST';
+
+            $.ajax({
+                url: url,
+                method: method,
+                headers: {
+                  'Authorization': token
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    // Handle success, maybe reload the table or close the modal
+                    $('#basicModal').modal('hide');
+                    fetchUsers(); // Refresh the payment table
+                    console.log("success")
+                },
+                error: function(error) {
+                    console.error('Error saving payment:', error);
+                }
+            });
+        });
+
+        // Function to populate the modal with client data for editing
+        window.editClient = function(clientId) {
+            $.ajax({
+                url: '/api/web/clients/' + clientId,
+                method: 'GET',
+                headers: {
+                  'Authorization': token
+                },
+                success: function(data) {
+                    $('#inputClientName').val(data.Name);
+                    $('#inputClientLoginEmail').val(data.LoginEmail);
+                    $('#inputOtherEmails').val(data.Emails.join(', '));
+                    $('#inputPhoneNumber').val(data.PhoneNumbers.join(', '));
+                    $('#inputSiteName').val(data.SiteName);
+                    $('#inputAddress').val(data.Address);
+                    $('#basicModal').modal('show');
+                    editClientId = clientId;
+                },
+                error: function(error) {
+                    console.error('Error fetching client data:', error);
+                }
+            });
+        }
+
+        window.deleteClient = function(clientId) {
+          $.ajax({
+              url: '/api/web/clients/' + clientId,
+              method: 'DELETE',
+              headers: {
+                'Authorization': token
+              },
+              success: function(data) {
+                console.log("deleted Client Successfully")
+                fetchUsers();
+              },
+              error: function(error) {
+                  console.error('Error fetching client data:', error);
+              }
+          });
+      }
+
+
+        // Fetch users on page load
+        fetchUsers();
+    });
+</script>
+</body>
+</html>

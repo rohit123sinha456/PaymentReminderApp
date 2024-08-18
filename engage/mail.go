@@ -17,7 +17,7 @@ import (
 func SendEmail(body ConfigStruct, to []string, subject, msgBody string) {
 	from := body.From
 	pass := body.Pass
-
+	fmt.Printf("%v", to)
 	msg := "From: " + from + "\n" +
 		"To: " + fmt.Sprintf("%v", to) + "\n" +
 		"Subject: " + subject + "\n\n" +

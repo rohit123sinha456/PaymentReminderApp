@@ -93,3 +93,19 @@ func (h *ServiceReportHandler) GetServiceReports(c *gin.Context) {
 
 	c.JSON(http.StatusOK, serviceReports)
 }
+
+func (h *ServiceReportHandler) GetServiceReportsByClientID(c *gin.Context) {
+    clientID, err := strconv.Atoi(c.Param("client_id"))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
+        return
+    }
+
+    payments, err := h.Repository.GetServiceReportsByClientID(uint(clientID))
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, payments)
+}

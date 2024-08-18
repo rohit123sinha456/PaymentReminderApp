@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header" .}}
+<body>
+  {{template "navbar" .}}
+  {{template "sidebar" .}}
+
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Quotations</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-12">
+    
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Clients list</h5>
+    
+                  <!-- Default Table -->
+                  <table class="table" id="usersTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Site</th>
+                        <th scope="col">Quotations</th>
+                        <th scope="col">Send Reminders</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <!-- User data will be inserted here -->
+                    </tbody>
+                  </table>
+                  <!-- End Default Table Example -->
+                </div>
+              </div>
+            </div>
+          </div>
+        <div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 11"></div>
+    </section>
+  </main><!-- End #main -->
+
+<script>
+  // Function to view Quotations
+  function viewQuotations(clientId) {
+    console.log(clientId);
+    window.location.href = '/quotations_clients?cid=' + clientId;
+  }
+
+  // Function to show a toast
+  function showToast(message) {
+    var toastHTML = `
+      <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+        <div class="toast-header">
+          <strong class="mr-auto">Notification</strong>
+          <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="toast-body">
+          ${message}
+        </div>
+      </div>
+    `;
+    $('#toastContainer').html(toastHTML);
+    $('.toast').toast('show');
+  }
+
+
+  // Function to send reminder
+  function sendReminder(clientId) {
+    const token = localStorage.getItem('jwt');
+    $.ajax({
+      url: '/api/web/send-quotation-reminders',
+      method: 'POST',
+      headers: {
+        'Authorization': token
+      },
+      contentType: 'application/json',
+      data: JSON.stringify({
+        client_ids: [clientId]
+      }),
+      success: function(response) {
+        // Show a success toast
+        showToast("Reminder sent successfully!");
+      },
+      error: function(error) {
+        console.error('Error sending reminder:', error);
+      }
+    });
+  }
+    $(document).ready(function() {
+        const token = localStorage.getItem('jwt');
+        // Function to fetch and display users
+        function fetchUsers() {
+            $.ajax({
+                url: '/api/web/clients',
+                method: 'GET',
+                headers: {
+                  'Authorization': token
+                },
+                success: function(data) {
+                    var tbody = $('#usersTable tbody');
+                    tbody.empty(); // Clear previous data
+                    data.forEach(function(user) {
+                        var emailList = Array.isArray(user.Emails) ? user.Emails.join(', ') : user.Emails;
+                        var phoneList = Array.isArray(user.PhoneNumbers) ? user.PhoneNumbers.join(', ') : user.PhoneNumbers;
+                        var row = '<tr>' +
+                            '<td>' + user.ID + '</td>' +
+                            '<td>' + user.Name + '</td>'+
+                            '<td>' + user.SiteName + '</td>'+
+                            '<td> <button type="button" class="btn btn-primary" onclick="viewQuotations(' + user.ID + ')">View Quotations</button> </td>'+
+                            '<td> <button type="button" class="btn btn-primary" onclick="sendReminder(' + user.ID + ')">Send Reminder</button> </td>'
+                            '</tr>';
+                        tbody.append(row);
+                    });
+                },
+                error: function(error) {
+                    console.error('Error fetching users:', error);
+                }
+            });
+        }
+
+        // Fetch users on page load
+        fetchUsers();
+    });
+</script>
+</body>
+</html>

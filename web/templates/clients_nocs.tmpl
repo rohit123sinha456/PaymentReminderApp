@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header" .}}
+<body>
+  {{template "navbar" .}}
+  {{template "sidebar" .}}
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Client Payments</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Payments</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-12">
+    
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Payments</h5>
+
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
+                    Create Payments Reminder
+                  </button>
+                  <div class="modal fade" id="basicModal" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Create Payment Reminder</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">General Form Elements</h5>
+                
+                              <!-- General Form Elements -->
+                              <form>
+                                <div class="row mb-3">
+                                  <label for="inputDate" class="col-sm-6 col-form-label">Invoice Date</label>
+                                  <div class="col-sm-6">
+                                    <input type="date" class="form-control" id="inputInvoiceDate">
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputDate" class="col-sm-6 col-form-label">Sent Date</label>
+                                  <div class="col-sm-6">
+                                    <input type="date" class="form-control" id="inputSentDate">
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Invoice Number</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputInvoiceNumber">
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Invoice Amount</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputInvoiceAmount">
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Invoice For</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputInvoiceFor">
+                                  </div>
+                                </div>  
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Invoice Link</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputInvoiceLink">
+                                  </div>
+                                </div>
+                                
+                              </form><!-- End General Form Elements -->
+                
+                            </div>
+                          </div>
+
+                        
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div><!-- End Basic Modal-->
+
+
+
+
+                  <!-- Default Table -->
+                  <table class="table" id="paymentsTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Number</th>
+                        <th scope="col">For</th>
+                        <th scope="col">Paid</th>
+                        <th scope="col">Link</th>
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Payment data will be inserted here -->
+                    </tbody>
+                  </table>
+                  <!-- End Default Table Example -->
+                </div>
+              </div>
+    
+    </section>
+
+  </main><!-- End #main -->
+
+<script>
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric'};
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+
+    $(document).ready(function() {
+        // Extract client_id from the URL
+        var urlParams = new URLSearchParams(window.location.search);
+        var clientID = urlParams.get('cid');
+
+        // Function to fetch and display payments
+        function fetchPayments() {
+            $.ajax({
+                url: '/api/web/payments/client/' + clientID,
+                method: 'GET',
+                success: function(data) {
+                    var tbody = $('#paymentsTable tbody');
+                    tbody.empty(); // Clear previous data
+                    data.forEach(function(payment) {
+                      var switchChecked = payment.IsPaid ? 'checked' : '';
+                        var row = '<tr>' +
+                            '<td>' + payment.ID + '</td>' +
+                            '<td>' + payment.InvoiceAmount + '</td>' +
+                            '<td>' + formatDate(payment.InvoiceDate) + '</td>' +
+                            '<td>' + payment.InvoiceNumber + '</td>' +
+                            '<td>' + payment.InvoiceFor + '</td>' +
+                            '<td><input type="checkbox" class="form-check-input isPaidSwitch" data-id="' + payment.ID + '" ' + switchChecked + '></td>' +
+                            '<td>' + '<a href='+ payment.InvoiceLink +'> Invoices </a>' + '</td>'
+
+
+                            '</tr>';
+                        tbody.append(row);
+                    });
+
+                    $('.isPaidSwitch').change(function() {
+                      var paymentID = $(this).data('id');
+                      var isPaid = $(this).is(':checked');
+                      console.log('clicked');
+                      $.ajax({
+                          url: '/api/web/payments/' + paymentID,
+                          method: 'PUT',
+                          contentType: 'application/json',
+                          data: JSON.stringify({ ispaid: isPaid }),
+                          success: function(response) {
+                              console.log(isPaid)
+                              console.log('Payment status updated successfully');
+                          },
+                          error: function(error) {
+                              console.error('Error updating payment status:', error);
+                          }
+                      });
+                  });
+
+
+                },
+                error: function(error) {
+                    console.error('Error fetching payments:', error);
+                }
+            });
+        }
+
+        // Function to send form data to the server
+        $('#saveChangesBtn').on('click', function() {
+            var data = {
+                invoicedate: new Date($('#inputInvoiceDate').val()).toISOString(),
+                sentdate: new Date($('#inputSentDate').val()).toISOString(),
+                invoicenumber: $('#inputInvoiceNumber').val(),
+                invoiceamount: parseFloat($('#inputInvoiceAmount').val()),
+                invoicefor: $('#inputInvoiceFor').val(),
+                invoicelink: $('#inputInvoiceLink').val(),
+                ispaid: $('#inputIsPaid').val() === "true",
+                clientid: parseInt(clientID)
+            };
+
+            $.ajax({
+                url: '/api/web/payments',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    // Handle success, maybe reload the table or close the modal
+                    $('#basicModal').modal('hide');
+                    fetchPayments(); // Refresh the payment table
+                    console.log("success")
+                },
+                error: function(error) {
+                    console.error('Error saving payment:', error);
+                }
+            });
+        });
+
+        // Fetch payments on page load
+        fetchPayments();
+    });
+</script>
+</body>
+</html>

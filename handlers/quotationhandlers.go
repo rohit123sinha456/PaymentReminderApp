@@ -76,6 +76,23 @@ func (h *QuotationHandler) DeleteQuotation(c *gin.Context) {
     c.JSON(http.StatusNoContent, nil)
 }
 
+func (h *QuotationHandler) GetQuotationByClientID(c *gin.Context) {
+    clientID, err := strconv.Atoi(c.Param("client_id"))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
+        return
+    }
+
+    payments, err := h.Repository.GetQuotationByClientID(uint(clientID))
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, payments)
+}
+
+
 // GetQuotationReminders fetches all quotations for the logged-in client.
 func (h *QuotationHandler) GetQuotationReminders(c *gin.Context) {
 	clientID, exists := c.Get("clientID")

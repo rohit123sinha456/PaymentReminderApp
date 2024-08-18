@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header" .}}
+<body>
+  {{template "navbar" .}}
+  {{template "sidebar" .}}
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Client Quotations</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+          <li class="breadcrumb-item active">Quotations</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+            <div class="col-lg-12">
+    
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title" id="QuotationHeader">Quotations</h5>
+
+                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#basicModal">
+                    Create Quotations Reminder
+                  </button>
+                  <div class="modal fade" id="basicModal" tabindex="-1">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Create Payment Reminder</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+
+                          <div class="card">
+                            <div class="card-body">
+                              <h5 class="card-title">General Form Elements</h5>
+                
+                              <!-- General Form Elements -->
+                              <form id="quoteCreateForm">
+                                <div class="row mb-3">
+                                  <label for="inputDate" class="col-sm-6 col-form-label">Quotation Date</label>
+                                  <div class="col-sm-6">
+                                    <input type="date" class="form-control" id="inputQuotationDate" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputDate" class="col-sm-6 col-form-label">Sent Date</label>
+                                  <div class="col-sm-6">
+                                    <input type="date" class="form-control" id="inputSentDate" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputDate" class="col-sm-6 col-form-label">Valid Till Date</label>
+                                  <div class="col-sm-6">
+                                    <input type="date" class="form-control" id="inputQuotationValidDate" required>
+                                  </div>
+                                </div>   
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Quotation Number</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputQuotationNumber" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Quotation Amount</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputQuotationAmount" required>
+                                  </div>
+                                </div>
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Quotation For</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputQuotationFor" required>
+                                  </div>
+                                </div>  
+                                <div class="row mb-3">
+                                  <label for="inputText" class="col-sm-6 col-form-label">Quotation Link</label>
+                                  <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="inputQuotationLink" required>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                  <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save changes</button>
+                                </div>
+                              </form><!-- End General Form Elements -->
+                
+                            </div>
+                          </div>
+
+                        
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div><!-- End Basic Modal-->
+
+
+
+
+                  <!-- Default Table -->
+                  <table class="table" id="paymentsTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Number</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Amount</th>
+                        <th scope="col">Is Approved</th>
+                        <th scope="col">Link</th>
+                        <th scope="col">Action</th>
+
+
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <!-- Payment data will be inserted here -->
+                    </tbody>
+                  </table>
+                  <!-- End Default Table Example -->
+                </div>
+              </div>
+    
+    </section>
+
+  </main><!-- End #main -->
+
+<script>
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric'};
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+
+    $(document).ready(function() {
+        const token = localStorage.getItem('jwt');
+        // Extract client_id from the URL
+        var editQuotationId = null;
+        var urlParams = new URLSearchParams(window.location.search);
+        var clientID = urlParams.get('cid');
+
+        // Function to fetch and display payments
+        function fetchPayments() {
+            $.ajax({
+                url: '/api/web/quotations/client/' + clientID,
+                method: 'GET',
+                headers: {
+                  'Authorization': token
+                },
+                success: function(data) {
+                    $('#QuotationHeader').text((data.length > 0 && data[0].Client.Name) ? data[0].Client.Name +' Quotation'  : "No" +' Quotation');
+                    var tbody = $('#paymentsTable tbody');
+                    tbody.empty(); // Clear previous data
+                    data.forEach(function(quotation) {
+                      var switchChecked = quotation.IsApproved ? 'checked' : '';
+                        var row = '<tr>' +
+                            '<td>' + quotation.ID + '</td>' +
+                            '<td>' + quotation.QuotationNumber + '</td>' +
+                            '<td>' + formatDate(quotation.QuotationDate) + '</td>' +
+                            '<td>' + quotation.QuotationTotalValue + '</td>' +
+                            '<td><input type="checkbox" class="form-check-input isApprovedSwitch" data-id="' + quotation.ID + '" ' + switchChecked + '></td>' +
+                            '<td>' + '<a href='+ quotation.QuotationScannedLink +'> Invoices </a>' + '</td>' +
+                            '<td><button type="button" class="btn btn-warning btn-sm" onclick="editClient(' + quotation.ID + ')">Edit</button></td>' +
+                            '<td><button type="button" class="btn btn-warning btn-sm" onclick="deleteClient(' + quotation.ID + ')">Delete</button></td>' +
+                            
+
+                            '</tr>';
+                        tbody.append(row);
+                    });
+
+                    $('.isApprovedSwitch').change(function() {
+                      var quotationID = $(this).data('id');
+                      var isapproved = $(this).is(':checked');
+                      console.log('clicked');
+                      $.ajax({
+                          url: '/api/web/quotations/' + quotationID,
+                          method: 'PUT',
+                          headers: {
+                            'Authorization': token
+                          },
+                          contentType: 'application/json',
+                          data: JSON.stringify({ isapproved: isapproved }),
+                          success: function(response) {
+                              console.log(isapproved)
+                              console.log('Payment status updated successfully');
+                          },
+                          error: function(error) {
+                              console.error('Error updating payment status:', error);
+                          }
+                      });
+                  });
+
+
+                },
+                error: function(error) {
+                    console.error('Error fetching payments:', error);
+                }
+            });
+        }
+
+        // Function to send form data to the server
+        $('#quoteCreateForm').on('submit', function() {
+            var data = {
+              quotationdate: new Date($('#inputQuotationDate').val()).toISOString(),
+              sentdate: new Date($('#inputSentDate').val()).toISOString(),
+              quotationvalidtill: new Date($('#inputQuotationValidDate').val()).toISOString(),
+                quotationnumber: $('#inputQuotationNumber').val(),
+                quotationtotalvalue: parseFloat($('#inputQuotationAmount').val()),
+                quotationreason: $('#inputQuotationFor').val(),
+                quotationscannedlink: $('#inputQuotationLink').val(),
+                isapproved: $('#inputIsPaid').val() === "true",
+                clientid: parseInt(clientID)
+            };
+
+            var url = editQuotationId ? '/api/web/quotations/' + editQuotationId : '/api/web/quotations';
+            var method = editQuotationId ? 'PUT' : 'POST';
+
+            $.ajax({
+                url: url,
+                method: method,
+                headers: {
+                  'Authorization': token
+                },
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    // Handle success, maybe reload the table or close the modal
+                    $('#basicModal').modal('hide');
+                    console.log("success")
+                    location.reload()
+                },
+                error: function(error) {
+                    console.error('Error saving payment:', error);
+                }
+            });
+        });
+
+        // Function to populate the modal with client data for editing
+        window.editClient = function(quotationID) {
+            $.ajax({
+                url: '/api/web/quotations/' + quotationID,
+                method: 'GET',
+                headers: {
+                  'Authorization': token
+                },
+                success: function(data) {
+                  let dateObj = new Date(data.QuotationDate);
+                  let day = String(dateObj.getDate()).padStart(2, '0');
+                  let month = String(dateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                  let year = dateObj.getFullYear();
+                  let formattedDate = `${year}-${month}-${day}`;
+                  $('#inputQuotationDate').val(formattedDate);
+
+                  let ssentdateObj = new Date(data.SentDate);
+                  let sday = String(ssentdateObj.getDate()).padStart(2, '0');
+                  let smonth = String(ssentdateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                  let syear = ssentdateObj.getFullYear();
+                  let sformattedDate = `${syear}-${smonth}-${sday}`;
+                  $('#inputSentDate').val(sformattedDate);
+
+                  let qsentdateObj = new Date(data.QuotationValidTill);
+                  let qday = String(qsentdateObj.getDate()).padStart(2, '0');
+                  let qmonth = String(qsentdateObj.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+                  let qyear = qsentdateObj.getFullYear();
+                  let qformattedDate = `${qyear}-${qmonth}-${qday}`;
+                  $('#inputQuotationValidDate').val(qformattedDate);
+
+                    $('#inputQuotationNumber').val(data.QuotationNumber);
+                    $('#inputQuotationAmount').val(data.QuotationTotalValue);
+                    $('#inputQuotationFor').val(data.QuotationReason);
+                    $('#inputQuotationLink').val(data.QuotationScannedLink);
+                    $('#inputIsPaid').val(data.IsApproved);
+                    $('#basicModal').modal('show');
+                    editQuotationId = quotationID;
+                },
+                error: function(error) {
+                    console.error('Error fetching client data:', error);
+                }
+            });
+        }
+
+        window.deleteClient = function(quotationID) {
+          $.ajax({
+              url: '/api/web/quotations/' + quotationID,
+              method: 'DELETE',
+              headers: {
+                'Authorization': token
+              },
+              success: function(data) {
+                console.log("deleted Client Successfully")
+                location.reload()
+              },
+              error: function(error) {
+                  console.error('Error fetching client data:', error);
+              }
+          });
+      }
+
+
+
+        // Fetch payments on page load
+        fetchPayments();
+    });
+</script>
+</body>
+</html>

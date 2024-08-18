@@ -8,6 +8,8 @@ import(
 	. "github.com/rohit123sinha456/payredapp/config"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-contrib/cors"
+	"net/http"
+	"os"
 	// "log/slog"
 )
 
@@ -60,7 +62,12 @@ func NewAPIServer (listenAddr string, db *gorm.DB) *APIServer {
 // }
 
 func (server *APIServer) Init() {
+	var userprotected *gin.RouterGroup
+	var userprotectedpages *gin.RouterGroup
+
 	server.router.Use(cors.Default())
+	server.router.Static("/assets", os.Getenv("TEMPLATEPATH")+"assets")
+	server.router.LoadHTMLGlob(os.Getenv("TEMPLATEPATH")+"templates/*")
 	// InitializeLogger()
 	// Middleware to log all requests
 	// server.router.Use(func(c *gin.Context) {
@@ -90,6 +97,13 @@ func (server *APIServer) Init() {
 	// Initialise Google Oauth Handler
 	googleOauthHandler := &Config{GoogleLoginConfig: googleoauthConfig}
 
+
+
+	server.router.GET("/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
 	//Client Login Routes
 	server.router.GET("/google_callback", googleOauthHandler.GoogleCallback)
 	server.router.GET("/google_login", googleOauthHandler.GoogleLogin)
@@ -98,8 +112,70 @@ func (server *APIServer) Init() {
 	// User Login
 	server.router.POST("/userlogin", userloginHandler.Login)
 
+	// For production for token based auth
+	if(os.Getenv("MODE") == "dev"){
+		//For development for no auth
+		userprotected = server.router.Group("/api/web")
+	}else{
+		userprotected = server.router.Group("/api/web", AuthMiddleware())
+		userprotectedpages = server.router.Group("/")
+	}
+
+	// Token protected WEB Routes
+
+	userprotectedpages.GET("/clientspage", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "clients.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+
+	userprotectedpages.GET("/paymentspage", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "payments.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+
+	userprotectedpages.GET("/quotationspage", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "quotations.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+	userprotectedpages.GET("/service-reportspage", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "sreports.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+	userprotectedpages.GET("/nocspage", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "nocs.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+
+
+
+	userprotectedpages.GET("/payments_clients", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "clients_payments.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+	userprotectedpages.GET("/quotations_clients", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "clients_quotations.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+	userprotectedpages.GET("/sreports_clients", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "clients_sreports.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+	userprotectedpages.GET("/nocs_clients", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "clients_nocs.tmpl", gin.H{
+			"title": "Main website",
+		})
+	})
+
+
 	// User routes
-	userprotected := server.router.Group("/api/web", AuthMiddleware())
 	userprotected.POST("/users", userHandler.CreateUser)
 	userprotected.GET("/users/:id", userHandler.GetUser)
 	userprotected.GET("/users", userHandler.GetAllUsers)
@@ -111,6 +187,7 @@ func (server *APIServer) Init() {
 	userprotected.POST("/payments", paymentHandler.CreatePayment)
 	userprotected.GET("/payments/:id", paymentHandler.GetPayment)
 	userprotected.GET("/payments", paymentHandler.GetAllPayments)
+	userprotected.GET("/payments/client/:client_id", paymentHandler.GetPaymentsByClientID) // New route
 	userprotected.PUT("/payments/:id", paymentHandler.UpdatePayment)
 	userprotected.DELETE("/payments/:id", paymentHandler.DeletePayment)
 
@@ -118,6 +195,7 @@ func (server *APIServer) Init() {
     userprotected.POST("/quotations", quotationHandler.CreateQuotation)
     userprotected.GET("/quotations/:id", quotationHandler.GetQuotation)
     userprotected.GET("/quotations", quotationHandler.GetAllQuotations)
+	userprotected.GET("/quotations/client/:client_id", quotationHandler.GetQuotationByClientID) // New route
     userprotected.PUT("/quotations/:id", quotationHandler.UpdateQuotation)
     userprotected.DELETE("/quotations/:id", quotationHandler.DeleteQuotation)
 
@@ -125,6 +203,7 @@ func (server *APIServer) Init() {
     userprotected.POST("/servicereports", serviceReportHandler.CreateServiceReport)
     userprotected.GET("/servicereports/:id", serviceReportHandler.GetServiceReport)
     userprotected.GET("/servicereports", serviceReportHandler.GetAllServiceReports)
+	userprotected.GET("/servicereports/client/:client_id", serviceReportHandler.GetServiceReportsByClientID) // New route
     userprotected.PUT("/servicereports/:id", serviceReportHandler.UpdateServiceReport)
     userprotected.DELETE("/servicereports/:id", serviceReportHandler.DeleteServiceReport)
 
@@ -145,6 +224,10 @@ func (server *APIServer) Init() {
 
 	// Email reminder route
 	userprotected.POST("/send-reminders", emailHandler.SendReminders)
+	userprotected.POST("/send-quotation-reminders", emailHandler.SendQuotationReminders)
+	userprotected.POST("/send-sreport-reminders", emailHandler.SendServiceReportReminders)
+
+
 
 
 

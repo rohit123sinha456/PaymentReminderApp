@@ -14,7 +14,7 @@ type Payment struct {
 	InvoiceFor        string         `gorm:"size:255"`
 	NumberOfReminders int            `gorm:"default:0"`
 	ReminderDates     []time.Time    `gorm:"type:json"`
-	IsPaid            bool           `gorm:"default:false"`
+	IsPaid            *bool           `gorm:"default:false;type:boolean"`
 	InvoiceLink       string         `gorm:"size:255"`
 	ClientID          uint           `gorm:"not null"`
 	Client            Client         `gorm:"foreignKey:ClientID"`
@@ -22,5 +22,5 @@ type Payment struct {
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
 	DeletedAt         gorm.DeletedAt `gorm:"index"`
-	IsDeleted           bool           `gorm:"default:false"`
+	IsDeleted         *bool           `gorm:"default:false"`
 }

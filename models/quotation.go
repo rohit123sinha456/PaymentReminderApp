@@ -18,7 +18,7 @@ type Quotation struct {
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 	DeletedAt          gorm.DeletedAt `gorm:"index"`
-	IsDeleted           bool           `gorm:"default:false"`
-	IsApproved         bool           `gorm:"default:false"`
+	IsDeleted          *bool           `gorm:"default:false;type:boolean"`
+	IsApproved         *bool           `gorm:"default:false;type:boolean"`
 	QuotationScannedLink string       `gorm:"size:255"`
 }

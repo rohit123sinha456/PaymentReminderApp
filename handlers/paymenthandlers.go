@@ -77,6 +77,22 @@ func (h *PaymentHandler) DeletePayment(c *gin.Context) {
     c.JSON(http.StatusNoContent, nil)
 }
 
+func (h *PaymentHandler) GetPaymentsByClientID(c *gin.Context) {
+    clientID, err := strconv.Atoi(c.Param("client_id"))
+    if err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid client ID"})
+        return
+    }
+
+    payments, err := h.Repository.GetPaymentsByClientID(uint(clientID))
+    if err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    c.JSON(http.StatusOK, payments)
+}
+
 func (h *PaymentHandler) GetPaymentReminders(c *gin.Context) {
 	clientID, exists := c.Get("clientID")
 	if !exists {

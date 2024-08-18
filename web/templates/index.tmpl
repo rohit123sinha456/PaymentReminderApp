@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+{{template "header" .}}
+<body class="d-flex align-items-center justify-content-center vh-100">
+  
+  <div class="card w-50">
+    <div class="card-body">
+      <h5 class="card-title">Login Form</h5>
+
+      <!-- No Labels Form -->
+      <form class="row g-3" id="loginForm">
+        <div class="col-md-12">
+          <input type="email" class="form-control" placeholder="Email" id="username">
+        </div>
+        <div class="col-12">
+          <input type="password" class="form-control" placeholder="Password" id="password">
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="reset" class="btn btn-secondary">Reset</button>
+        </div>
+      </form><!-- End No Labels Form -->
+
+    </div>
+  </div>
+
+  
+<script>
+  $(document).ready(function() {
+      $('#loginForm').on('submit', function() {
+        event.preventDefault();
+        const username = $('#username').val();
+        const password = $('#password').val();
+
+        // Send login request
+        $.ajax({
+            url: '/userlogin',  // Your login endpoint
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email: username, password: password }),
+            success: function(response) {
+                // Assuming the response contains the JWT
+                const token = response.token;
+                console.log(token)
+                // Store the token securely
+                localStorage.setItem('jwt', token);
+                window.location.href = '/clientspage'; // Example redirection
+            },
+            error: function(jqXHR) {
+                // Handle login error (e.g., show an error message)
+                alert('Login failed: ' + jqXHR.responseText);
+            }
+        });
+
+
+      });
+  });
+</script>
+</body>
+</html>

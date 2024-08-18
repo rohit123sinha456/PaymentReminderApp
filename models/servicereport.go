@@ -13,11 +13,11 @@ type ServiceReport struct {
 	CreatedAt           time.Time
 	UpdatedAt           time.Time
 	DeletedAt           gorm.DeletedAt `gorm:"index"`
-	IsDeleted           bool           `gorm:"default:false"`
+	IsDeleted           *bool           `gorm:"default:false;type:boolean"`
 	ServiceReportLink   string         `gorm:"size:255"`
 	ClientID            uint           `gorm:"not null"`
 	Client              Client         `gorm:"foreignKey:ClientID"`
 	ServiceReportNotes  string         `gorm:"type:text"`
-	AttentionRequired   bool           `gorm:"size:255"`
+	AttentionRequired   *bool           `gorm:"size:255;type:boolean"`
 	SystemStatus        string         `gorm:"size:255"`
 }
